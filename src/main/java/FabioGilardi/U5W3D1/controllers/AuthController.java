@@ -26,7 +26,6 @@ public class AuthController {
     @PostMapping("/login")
     private UserLoginResponseDTO login(@RequestBody @Validated UserLoginDTO payload) {
         return new UserLoginResponseDTO(authService.authUserAndCreateToken(payload));
-//        CLASSIC UNSKILLED EZREAL MAIN
     }
 
     @PostMapping("/register")
