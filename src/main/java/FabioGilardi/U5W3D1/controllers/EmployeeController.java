@@ -7,6 +7,7 @@ import FabioGilardi.U5W3D1.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -23,14 +24,14 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @GetMapping("/me")
-    private Employee getProfile(@AuthenticationPrincipal Employee currentUser) {
+    public Employee getProfile(@AuthenticationPrincipal Employee currentUser) {
         return currentUser;
     }
 
     @PutMapping("/me")
-    private Employee modifyProfile(@AuthenticationPrincipal Employee currentUser,
-                                   @RequestBody @Validated EmployeeDTO payload,
-                                   BindingResult validation) {
+    public Employee modifyProfile(@AuthenticationPrincipal Employee currentUser,
+                                  @RequestBody @Validated EmployeeDTO payload,
+                                  BindingResult validation) {
         if (validation.hasErrors())
             throw new BadRequestException(validation.getAllErrors());
         else
@@ -39,7 +40,7 @@ public class EmployeeController {
 
     @DeleteMapping("/me")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    private void deleteProfile(@AuthenticationPrincipal Employee currentUser) {
+    public void deleteProfile(@AuthenticationPrincipal Employee currentUser) {
         employeeService.findByIdAndDelete(currentUser.getId());
     }
 
@@ -50,20 +51,20 @@ public class EmployeeController {
     }
 
     @GetMapping
-//    @PreAuthorize("hasAuthority('ADMIN')")
-    private Page<Employee> findAll(@RequestParam(defaultValue = "0") int page,
-                                   @RequestParam(defaultValue = "10") int size,
-                                   @RequestParam(defaultValue = "id") String sortBy) {
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public Page<Employee> findAll(@RequestParam(defaultValue = "0") int page,
+                                  @RequestParam(defaultValue = "10") int size,
+                                  @RequestParam(defaultValue = "id") String sortBy) {
         return this.employeeService.findAll(page, size, sortBy);
     }
 
     @GetMapping("/{id}")
-    private Employee findById(@PathVariable long id) {
+    public Employee findById(@PathVariable long id) {
         return employeeService.findById(id);
     }
 
     @PutMapping("/{id}")
-    private Employee findByIdAndUpdate(@PathVariable long id, @RequestBody @Validated EmployeeDTO payload, BindingResult validation) {
+    public Employee findByIdAndUpdate(@PathVariable long id, @RequestBody @Validated EmployeeDTO payload, BindingResult validation) {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
         }
@@ -72,7 +73,7 @@ public class EmployeeController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    private void findByIdAndDelete(@PathVariable long id) {
+    public void findByIdAndDelete(@PathVariable long id) {
         employeeService.findByIdAndDelete(id);
     }
 
