@@ -7,6 +7,7 @@ import FabioGilardi.U5W3D1.services.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +20,41 @@ import java.io.IOException;
 public class EmployeeController {
 
     @Autowired
-    EmployeeService employeeService;
+    private EmployeeService employeeService;
+
+    @GetMapping("/me")
+    private Employee getProfile(@AuthenticationPrincipal Employee currentUser) {
+        return currentUser;
+    }
+
+    @PutMapping("/me")
+    private Employee modifyProfile(@AuthenticationPrincipal Employee currentUser,
+                                   @RequestBody @Validated EmployeeDTO payload,
+                                   BindingResult validation) {
+        if (validation.hasErrors())
+            throw new BadRequestException(validation.getAllErrors());
+        else
+            return employeeService.findByIdAndUpdate(currentUser.getId(), payload);
+    }
+
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    private void deleteProfile(@AuthenticationPrincipal Employee currentUser) {
+        employeeService.findByIdAndDelete(currentUser.getId());
+    }
+
+    @PostMapping("/me/upload")
+    public Employee uploadAvatar(@RequestParam("avatar") MultipartFile image,
+                                 @AuthenticationPrincipal Employee currentUser) throws IOException {
+        return employeeService.uploadImage(image, currentUser.getId());
+    }
 
     @GetMapping
-    private Page<Employee> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy) {
-        return employeeService.findAll(page, size, sortBy);
+//    @PreAuthorize("hasAuthority('ADMIN')")
+    private Page<Employee> findAll(@RequestParam(defaultValue = "0") int page,
+                                   @RequestParam(defaultValue = "10") int size,
+                                   @RequestParam(defaultValue = "id") String sortBy) {
+        return this.employeeService.findAll(page, size, sortBy);
     }
 
     @GetMapping("/{id}")
@@ -46,7 +77,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/upload/{id}")
-    public Employee uploadAvatar(@RequestParam("avatar") MultipartFile image, @PathVariable long id) throws IOException {
+    public Employee uploadAvatarForced(@RequestParam("avatar") MultipartFile image, @PathVariable long id) throws IOException {
         return employeeService.uploadImage(image, id);
     }
 }

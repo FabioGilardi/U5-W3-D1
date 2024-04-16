@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,8 @@ public class EmployeeService {
     private Cloudinary cloudinaryUploader;
     @Autowired
     private EmployeeDAO employeeDAO;
+    @Autowired
+    private PasswordEncoder encoder;
 
     public Page<Employee> findAll(int number, int size, String sortBY) {
         Pageable pageable = PageRequest.of(number, size, Sort.by(sortBY));
@@ -32,7 +35,7 @@ public class EmployeeService {
 
     public Employee save(EmployeeDTO payload) {
         if (!employeeDAO.existsByEmail(payload.email()) && !employeeDAO.existsByUsername(payload.username())) {
-            Employee newEmployee = new Employee(payload.username(), payload.name(), payload.surname(), payload.email(), payload.password());
+            Employee newEmployee = new Employee(payload.username(), payload.name(), payload.surname(), payload.email(), encoder.encode(payload.password()));
             return employeeDAO.save(newEmployee);
         } else throw new BadRequestException("email/username has been already taken");
     }

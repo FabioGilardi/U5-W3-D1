@@ -32,4 +32,10 @@ public class JWTTools {
             throw new UnauthorizedException("Token issues, verify if token is still active or it has been modified");
         }
     }
+
+    public String idFromToken(String token) {
+        return Jwts.parser()
+                .verifyWith(Keys.hmacShaKeyFor(this.secret.getBytes()))
+                .build().parseSignedClaims(token).getPayload().getSubject();
+    }
 }

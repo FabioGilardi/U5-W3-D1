@@ -2,6 +2,7 @@ package FabioGilardi.U5W3D1.exceptions;
 
 import FabioGilardi.U5W3D1.payloads.ErrorDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,6 +33,12 @@ public class ExceptionsHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     private ErrorDTO UnauthorizedExceptionHandler(UnauthorizedException ex) {
         return new ErrorDTO(ex.getMessage(), LocalDateTime.now());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    private ErrorDTO AccessDeniedExceptionHandler(AccessDeniedException ex) {
+        return new ErrorDTO("Access denied", LocalDateTime.now());
     }
 
     @ExceptionHandler(Exception.class)
