@@ -59,11 +59,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Employee findById(@PathVariable long id) {
         return employeeService.findById(id);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Employee findByIdAndUpdate(@PathVariable long id, @RequestBody @Validated EmployeeDTO payload, BindingResult validation) {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
@@ -72,12 +74,14 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void findByIdAndDelete(@PathVariable long id) {
         employeeService.findByIdAndDelete(id);
     }
 
     @PostMapping("/upload/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public Employee uploadAvatarForced(@RequestParam("avatar") MultipartFile image, @PathVariable long id) throws IOException {
         return employeeService.uploadImage(image, id);
     }

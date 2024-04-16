@@ -21,13 +21,13 @@ public class DeviceController {
     private DeviceService deviceService;
 
     @GetMapping
-    private Page<Device> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy) {
+    public Page<Device> findAll(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "id") String sortBy) {
         return deviceService.findAll(page, size, sortBy);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    private Device save(@RequestBody @Validated NewDeciveDTO payload, BindingResult validation) {
+    public Device save(@RequestBody @Validated NewDeciveDTO payload, BindingResult validation) {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
         }
@@ -35,12 +35,12 @@ public class DeviceController {
     }
 
     @GetMapping("/{id}")
-    private Device findById(@PathVariable long id) {
+    public Device findById(@PathVariable long id) {
         return deviceService.findById(id);
     }
 
     @PutMapping("/{id}")
-    private Device findByIdAndUpdate(@PathVariable long id, @RequestBody @Validated DeviceDTO payload, BindingResult validation) {
+    public Device findByIdAndUpdate(@PathVariable long id, @RequestBody @Validated DeviceDTO payload, BindingResult validation) {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
         }
@@ -49,12 +49,12 @@ public class DeviceController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    private void findByIdAndDelete(@PathVariable long id) {
+    public void findByIdAndDelete(@PathVariable long id) {
         deviceService.findByIdAndDelete(id);
     }
 
     @PutMapping("/assignement/{id}")
-    private Device findByIdAndAssign(@PathVariable long id, @RequestBody DeviceAssignementDTO payload, BindingResult validation) {
+    public Device findByIdAndAssign(@PathVariable long id, @RequestBody DeviceAssignementDTO payload, BindingResult validation) {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
         }

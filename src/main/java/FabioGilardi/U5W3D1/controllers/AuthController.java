@@ -24,13 +24,13 @@ public class AuthController {
     EmployeeService employeeService;
 
     @PostMapping("/login")
-    private UserLoginResponseDTO login(@RequestBody @Validated UserLoginDTO payload) {
+    public UserLoginResponseDTO login(@RequestBody @Validated UserLoginDTO payload) {
         return new UserLoginResponseDTO(authService.authUserAndCreateToken(payload));
     }
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    private Employee save(@RequestBody @Validated EmployeeDTO payload, BindingResult validation) {
+    public Employee save(@RequestBody @Validated EmployeeDTO payload, BindingResult validation) {
         if (validation.hasErrors()) {
             throw new BadRequestException(validation.getAllErrors());
         }
